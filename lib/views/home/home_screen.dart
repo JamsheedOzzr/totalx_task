@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'add_user_screen.dart';
 import '../widgets/user_card.dart';
+import '../../controllers/user_controller.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserController>().fetchUsers();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +53,9 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
+                      onChanged: (val) {
+                        context.read<UserController>().setSearchQuery(val);
+                      },
                       decoration: InputDecoration(
                         hintText: "search by name",
                         border: OutlineInputBorder(
@@ -61,9 +79,21 @@ class HomeScreen extends StatelessWidget {
             ),
 
             Expanded(
-              child: ListView.builder(
-                itemCount: 6,
-                itemBuilder: (_, index) => const UserCard(),
+              child: Consumer<UserController>(
+                builder: (context, controller, child) {
+                  if (controller.isLoading && controller.users.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (controller.users.isEmpty) {
+                    return const Center(child: Text("No users found"));
+                  }
+                  return ListView.builder(
+                    itemCount: controller.users.length,
+                    itemBuilder: (_, index) {
+                      return UserCard(user: controller.users[index]);
+                    },
+                  );
+                },
               ),
             )
           ],

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../models/user_model.dart';
 
 class UserCard extends StatelessWidget {
-  const UserCard({super.key});
+  final UserModel user;
+
+  const UserCard({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -14,15 +17,19 @@ class UserCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(radius: 25),
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: user.imageUrl.isNotEmpty ? NetworkImage(user.imageUrl) : null,
+            child: user.imageUrl.isEmpty ? const Icon(Icons.person) : null,
+          ),
 
           const SizedBox(width: 10),
 
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text("Demo User"),
-              Text("Age: 25"),
+            children: [
+              Text(user.name),
+              Text("Age: ${user.age}"),
             ],
           )
         ],
