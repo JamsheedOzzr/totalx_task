@@ -1,4 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../../models/user_model.dart';
+import '../../controllers/user_controller.dart';
 
 class AddUserScreen extends StatefulWidget {
   const AddUserScreen({super.key});
@@ -11,6 +16,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
+  File? _selectedImage;
 
   @override
   void dispose() {
@@ -19,9 +25,57 @@ class _AddUserScreenState extends State<AddUserScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    // Allow user to select from gallery or camera
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Photo Gallery'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final picked = await picker.pickImage(source: ImageSource.gallery);
+                if (picked != null) {
+                  setState(() {
+                    _selectedImage = File(picked.path);
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () async {
+                Navigator.pop(ctx);
+                final picked = await picker.pickImage(source: ImageSource.camera);
+                if (picked != null) {
+                  setState(() {
+                    _selectedImage = File(picked.path);
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _save() {
     if (_formKey.currentState!.validate()) {
-      // Logic to save goes here
+      final newUser = UserModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text.trim(),
+        phoneNumber: '0000000000', // Default dummy as phone isn't in this UI yet
+        imageUrl: _selectedImage?.path ?? '',
+        age: int.parse(_ageController.text.trim()),
+      );
+
+      context.read<UserController>().addUser(newUser);
       Navigator.pop(context);
     }
   }
@@ -48,9 +102,17 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
                         const SizedBox(height: 20),
 
-                        const CircleAvatar(
-                          radius: 40,
-                          child: Icon(Icons.person),
+                        GestureDetector(
+                          onTap: _pickImage,
+                          child: CircleAvatar(
+                            radius: 40,
+                            backgroundImage: _selectedImage != null
+                                ? FileImage(_selectedImage!)
+                                : null,
+                            child: _selectedImage == null
+                                ? const Icon(Icons.person)
+                                : null,
+                          ),
                         ),
 
                         const SizedBox(height: 20),
