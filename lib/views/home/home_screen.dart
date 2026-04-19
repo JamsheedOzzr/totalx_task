@@ -20,6 +20,73 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _showSortBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Sort", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              
+              Consumer<UserController>(
+                builder: (context, controller, child) {
+                  return Column(
+                    children: [
+                      RadioListTile<SortOption>(
+                        title: const Text("Age - Elder"),
+                        value: SortOption.elder,
+                        groupValue: controller.sortOption,
+                        onChanged: (val) {
+                          controller.setSortOption(val!);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                      RadioListTile<SortOption>(
+                        title: const Text("Age - Younger"),
+                        value: SortOption.younger,
+                        groupValue: controller.sortOption,
+                        onChanged: (val) {
+                          controller.setSortOption(val!);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                      RadioListTile<SortOption>(
+                        title: const Text("Name A-Z"),
+                        value: SortOption.nameAZ,
+                        groupValue: controller.sortOption,
+                        onChanged: (val) {
+                          controller.setSortOption(val!);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                      RadioListTile<SortOption>(
+                        title: const Text("Name Z-A"),
+                        value: SortOption.nameZA,
+                        groupValue: controller.sortOption,
+                        onChanged: (val) {
+                          controller.setSortOption(val!);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,12 +131,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Icon(Icons.filter_list)
+                  IconButton(
+                    onPressed: () => _showSortBottomSheet(context),
+                    icon: const Icon(Icons.filter_list),
+                  ),
                 ],
               ),
             ),
-
             const Align(
               alignment: Alignment.centerLeft,
               child: Padding(

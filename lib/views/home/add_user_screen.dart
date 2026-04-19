@@ -16,14 +16,12 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   File? _selectedImage;
 
   @override
   void dispose() {
     _nameController.dispose();
     _ageController.dispose();
-    _phoneController.dispose();
     super.dispose();
   }
 
@@ -72,7 +70,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
       final newUser = UserModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        phoneNumber: _phoneController.text.trim(),
+        phoneNumber: '', // Not required anymore
         imageUrl: _selectedImage?.path ?? '',
         age: int.parse(_ageController.text.trim()),
       );
@@ -151,25 +149,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
                           },
                           decoration: InputDecoration(
                             labelText: "Age",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return "Please enter a phone number";
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Phone Number",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
