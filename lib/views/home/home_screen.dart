@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'add_user_screen.dart';
 import '../widgets/user_card.dart';
 import '../../controllers/user_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../auth/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -106,11 +108,27 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               color: Colors.black,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               width: double.infinity,
-              child: const Text(
-                "Nilambur",
-                style: TextStyle(color: Colors.white),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Nilambur",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      context.read<AuthController>().logout();
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false,
+                      );
+                    },
+                    icon: const Icon(Icons.logout, color: Colors.white),
+                  ),
+                ],
               ),
             ),
 

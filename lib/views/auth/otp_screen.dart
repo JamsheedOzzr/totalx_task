@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pinput/pinput.dart';
@@ -13,10 +14,51 @@ class OTPScreen extends StatefulWidget {
 
 class _OTPScreenState extends State<OTPScreen> {
   final TextEditingController _otpController = TextEditingController();
+  Timer? _timer;
+  int _secondsRemaining = 30;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _secondsRemaining = 30;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining > 0) {
+        setState(() {
+          _secondsRemaining--;
+        });
+      } else {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  Future<void> _resendOTP() async {
+    final authController = context.read<AuthController>();
+    final error = await authController.resendOTP();
+    
+    if (!mounted) return;
+    
+    if (error == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('OTP Resent successfully!')),
+      );
+      _startTimer();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to resend: $error')),
+      );
+    }
+  }
 
   @override
   void dispose() {
     _otpController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -93,7 +135,19 @@ class _OTPScreenState extends State<OTPScreen> {
                       ),
 
                       const SizedBox(height: 20),
-                      const Text("59 Sec", style: TextStyle(color: Colors.red)),
+                      if (_secondsRemaining > 0)
+                        Text(
+                          "$_secondsRemaining Sec",
+                          style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                        )
+                      else
+                        TextButton(
+                          onPressed: _resendOTP,
+                          child: const Text(
+                            "Don't receive OTP? Resend",
+                            style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                          ),
+                        ),
 
                       const Spacer(),
                       const SizedBox(height: 20),

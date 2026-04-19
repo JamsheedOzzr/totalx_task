@@ -81,4 +81,18 @@ class AuthController extends ChangeNotifier {
       return false;
     }
   }
+
+  /// Clears stored authentication data
+  void logout() {
+    _phoneNumber = null;
+    _reqId = null;
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Resends OTP to the current phone number
+  Future<String?> resendOTP() async {
+    if (_phoneNumber == null) return "No phone number found";
+    return await sendOTP(_phoneNumber!);
+  }
 }
