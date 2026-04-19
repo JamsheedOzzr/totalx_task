@@ -113,9 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Nilambur",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.white, size: 18),
+                      const SizedBox(width: 4),
+                      const Text(
+                        "Nilambur",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ],
                   ),
                   IconButton(
                     onPressed: () {

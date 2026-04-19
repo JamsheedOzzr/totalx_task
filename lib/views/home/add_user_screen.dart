@@ -101,17 +101,44 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             style: TextStyle(fontSize: 18)),
 
                         const SizedBox(height: 20),
-
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: CircleAvatar(
-                            radius: 40,
-                            backgroundImage: _selectedImage != null
-                                ? FileImage(_selectedImage!)
-                                : null,
-                            child: _selectedImage == null
-                                ? const Icon(Icons.person)
-                                : null,
+                        Center(
+                          child: GestureDetector(
+                            onTap: _pickImage,
+                            child: Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.white,
+                                  child: CircleAvatar(
+                                    radius: 48,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: _selectedImage != null
+                                        ? FileImage(_selectedImage!)
+                                        : null,
+                                    child: _selectedImage == null
+                                        ? const Icon(Icons.person,
+                                            size: 60, color: Colors.grey)
+                                        : null,
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.blue,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
 
