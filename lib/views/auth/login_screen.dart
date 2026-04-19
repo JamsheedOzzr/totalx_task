@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../controllers/auth_controller.dart';
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,12 +20,28 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const OTPScreen()),
-      );
+      final authController = context.read<AuthController>();
+      
+      final phone = _phoneController.text.trim();
+      
+      final apiErrorMsg = await authController.sendOTP(phone);
+      
+      if (!mounted) return;
+      
+      if (apiErrorMsg == null) {
+        // Success
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const OTPScreen()),
+        );
+      } else {
+        // Show specific error from MSG91
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(apiErrorMsg)),
+        );
+      }
     }
   }
 
@@ -87,17 +105,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Spacer(),
                         const SizedBox(height: 20),
 
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 55),
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          onPressed: _submit,
-                          child: const Text("Get OTP"),
+                        Consumer<AuthController>(
+                          builder: (context, authController, _) {
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 55),
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: authController.isLoading ? null : _submit,
+                              child: authController.isLoading 
+                                ? const CircularProgressIndicator(color: Colors.white) 
+                                : const Text("Get OTP"),
+                            );
+                          }
                         ),
                       ],
                     ),

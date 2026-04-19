@@ -31,14 +31,7 @@ class UserController extends ChangeNotifier {
 
   void fetchUsers() {
     _isLoading = true;
-    // notifyListeners();
-    // Simulate fetching
-    _users = [
-      UserModel(id: '1', name: 'John Doe', phoneNumber: '1234567890', imageUrl: '', age: 45),
-      UserModel(id: '2', name: 'Jane Smith', phoneNumber: '0987654321', imageUrl: '', age: 65),
-      UserModel(id: '3', name: 'Alice', phoneNumber: '1112223334', imageUrl: '', age: 30),
-      UserModel(id: '4', name: 'Bob', phoneNumber: '5556667778', imageUrl: '', age: 70),
-    ];
+    _users = []; // Start with an empty list
     _isLoading = false;
     notifyListeners();
   }

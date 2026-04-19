@@ -3,8 +3,13 @@ import 'package:provider/provider.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/user_controller.dart';
 import 'views/auth/login_screen.dart';
+import 'package:sendotp_flutter_sdk/sendotp_flutter_sdk.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  OTPWidget.initializeWidget('366472744963323537333733', '509817TtVhJZWi4tna69e49329P1');
+
   runApp(
     MultiProvider(
       providers: [

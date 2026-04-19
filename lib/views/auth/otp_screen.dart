@@ -1,8 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pinput/pinput.dart';
+import '../../controllers/auth_controller.dart';
 import '../home/home_screen.dart';
 
-class OTPScreen extends StatelessWidget {
+class OTPScreen extends StatefulWidget {
   const OTPScreen({super.key});
+
+  @override
+  State<OTPScreen> createState() => _OTPScreenState();
+}
+
+class _OTPScreenState extends State<OTPScreen> {
+  final TextEditingController _otpController = TextEditingController();
+
+  @override
+  void dispose() {
+    _otpController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verify() async {
+    final otp = _otpController.text.trim();
+    if (otp.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a 6-digit OTP.')),
+      );
+      return;
+    }
+
+    final authController = context.read<AuthController>();
+    final success = await authController.verifyOTP(otp);
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid OTP or Verification Failed.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +78,16 @@ class OTPScreen extends StatelessWidget {
 
                       const SizedBox(height: 30),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(
-                          6,
-                          (index) => Container(
-                            width: 45,
-                            height: 55,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text("0"),
+                      Pinput(
+                        length: 6,
+                        controller: _otpController,
+                        defaultPinTheme: PinTheme(
+                          width: 45,
+                          height: 55,
+                          textStyle: const TextStyle(fontSize: 20, color: Colors.black),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
@@ -59,22 +98,23 @@ class OTPScreen extends StatelessWidget {
                       const Spacer(),
                       const SizedBox(height: 20),
 
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 55),
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      Consumer<AuthController>(
+                        builder: (context, authController, _) {
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(double.infinity, 55),
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            onPressed: authController.isLoading ? null : _verify,
+                            child: authController.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text("Verify"),
                           );
                         },
-                        child: const Text("Verify"),
                       ),
                     ],
                   ),

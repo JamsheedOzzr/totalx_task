@@ -38,8 +38,9 @@ class UserCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(user.name),
+              Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               Text("Age: ${user.age}"),
+              Text(user.phoneNumber, style: const TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           )
         ],
