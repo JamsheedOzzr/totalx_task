@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sendotp_flutter_sdk/sendotp_flutter_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends ChangeNotifier {
   bool _isLoading = false;
@@ -9,6 +10,16 @@ class AuthController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get phoneNumber => _phoneNumber;
   String? get reqId => _reqId;
+
+  AuthController() {
+    _loadAuthStatus();
+  }
+
+  Future<void> _loadAuthStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _phoneNumber = prefs.getString('phone_number');
+    notifyListeners();
+  }
 
   void setLoading(bool value) {
     _isLoading = value;
@@ -62,6 +73,8 @@ class AuthController extends ChangeNotifier {
       final response = await OTPWidget.verifyOTP(data);
       
       if (response != null && response['type'] == 'success') {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phone_number', _phoneNumber!);
         setLoading(false);
         return true;
       } else {
@@ -74,7 +87,9 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('phone_number');
     _phoneNumber = null;
     _reqId = null;
     _isLoading = false;

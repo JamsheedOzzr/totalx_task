@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 
 enum SortOption { all, elder, younger, nameAZ, nameZA }
@@ -43,9 +45,18 @@ class UserController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   SortOption get sortOption => _sortOption;
 
-  void fetchUsers() {
+  Future<void> fetchUsers() async {
     _isLoading = true;
-    _users = [];
+    notifyListeners();
+    
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = prefs.getString('users_list');
+    
+    if (usersJson != null) {
+      final List<dynamic> decoded = jsonDecode(usersJson);
+      _users = decoded.map((u) => UserModel.fromJson(u)).toList();
+    }
+    
     _isLoading = false;
     notifyListeners();
   }
@@ -60,8 +71,15 @@ class UserController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addUser(UserModel user) {
+  Future<void> addUser(UserModel user) async {
     _users.add(user);
+    await _saveUsers();
     notifyListeners();
+  }
+
+  Future<void> _saveUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = jsonEncode(_users.map((u) => u.toJson()).toList());
+    await prefs.setString('users_list', usersJson);
   }
 }

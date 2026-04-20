@@ -96,9 +96,10 @@ class _OTPScreenState extends State<OTPScreen> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
