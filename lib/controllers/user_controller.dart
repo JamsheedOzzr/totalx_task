@@ -12,7 +12,6 @@ class UserController extends ChangeNotifier {
   List<UserModel> get users {
     List<UserModel> filteredUsers = List.from(_users);
 
-    // Search filter
     if (_searchQuery.isNotEmpty) {
       filteredUsers = filteredUsers.where((user) {
         return user.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -20,14 +19,11 @@ class UserController extends ChangeNotifier {
       }).toList();
     }
 
-    // Sort/Filter logic
     switch (_sortOption) {
       case SortOption.elder:
-        // User asked for "age - elder", interpreting as oldest first
         filteredUsers.sort((a, b) => b.age.compareTo(a.age));
         break;
       case SortOption.younger:
-        // User asked for "age - younger", interpreting as youngest first
         filteredUsers.sort((a, b) => a.age.compareTo(b.age));
         break;
       case SortOption.nameAZ:
@@ -38,7 +34,6 @@ class UserController extends ChangeNotifier {
         break;
       case SortOption.all:
       default:
-        // No sorting
         break;
     }
 
@@ -50,7 +45,7 @@ class UserController extends ChangeNotifier {
 
   void fetchUsers() {
     _isLoading = true;
-    _users = []; // Start with an empty list as requested earlier
+    _users = [];
     _isLoading = false;
     notifyListeners();
   }

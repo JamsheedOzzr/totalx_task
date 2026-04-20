@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/user_controller.dart';
 import 'views/auth/login_screen.dart';
+import 'views/splash/splash_screen.dart';
 import 'package:sendotp_flutter_sdk/sendotp_flutter_sdk.dart';
 
 void main() {
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

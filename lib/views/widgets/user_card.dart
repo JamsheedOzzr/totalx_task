@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
+import '../../utils/app_images.dart';
 
 class UserCard extends StatelessWidget {
   final UserModel user;
@@ -29,12 +30,9 @@ class UserCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: imageProvider,
-            child: user.imageUrl.isEmpty ? const Icon(Icons.person) : null,
+            backgroundImage: imageProvider ?? const AssetImage(AppImages.userPlaceholder),
           ),
-
           const SizedBox(width: 10),
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

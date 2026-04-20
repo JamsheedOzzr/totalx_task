@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.grey[200],
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white),
         onPressed: () {
           Navigator.push(
             context,
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context.read<UserController>().setSearchQuery(val);
                       },
                       decoration: InputDecoration(
-                        hintText: "search by name",
+                        hintText: "Search by Name",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),

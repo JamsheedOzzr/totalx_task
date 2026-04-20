@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
 import '../../controllers/user_controller.dart';
+import '../../utils/app_images.dart';
 
 class AddUserScreen extends StatefulWidget {
   const AddUserScreen({super.key});
@@ -27,7 +28,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    // Allow user to select from gallery or camera
     showModalBottomSheet(
       context: context,
       builder: (ctx) => SafeArea(
@@ -70,7 +70,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
       final newUser = UserModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
-        phoneNumber: '', // Not required anymore
+        phoneNumber: '',
         imageUrl: _selectedImage?.path ?? '',
         age: int.parse(_ageController.text.trim()),
       );
@@ -96,10 +96,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     child: Column(
                       children: [
                         const SizedBox(height: 40),
-
                         const Text("Add A New User",
-                            style: TextStyle(fontSize: 18)),
-
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 20),
                         Center(
                           child: GestureDetector(
@@ -116,8 +114,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
                                         ? FileImage(_selectedImage!)
                                         : null,
                                     child: _selectedImage == null
-                                        ? const Icon(Icons.person,
-                                            size: 60, color: Colors.grey)
+                                        ? ClipOval(
+                                            child: Image.asset(
+                                              AppImages.userPlaceholder,
+                                              width: 96,
+                                              height: 96,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
                                         : null,
                                   ),
                                 ),
@@ -141,9 +145,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 20),
-
                         TextFormField(
                           controller: _nameController,
                           validator: (value) {
@@ -159,9 +161,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 10),
-
                         TextFormField(
                           controller: _ageController,
                           keyboardType: TextInputType.number,
@@ -181,10 +181,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             ),
                           ),
                         ),
-
                         const Spacer(),
                         const SizedBox(height: 20),
-
                         Row(
                           children: [
                             Expanded(
@@ -224,4 +222,3 @@ class _AddUserScreenState extends State<AddUserScreen> {
     );
   }
 }
-

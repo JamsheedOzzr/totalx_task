@@ -19,27 +19,23 @@ class AuthController extends ChangeNotifier {
     _phoneNumber = number;
   }
 
-  /// Returns null if successful, or an error message string if failed
   Future<String?> sendOTP(String phoneNumber) async {
     setLoading(true);
     setPhoneNumber(phoneNumber);
     
-    // Ensure phoneNumber has country code for MSG91 (91 for India)
     final formattedNumber = phoneNumber.startsWith('91') ? phoneNumber : '91$phoneNumber';
     
     try {
       final data = {
         'identifier': formattedNumber
       };
-      // sendOTP from SDK skips the browser's XmlHttpRequest, bypassing CORS automatically!
+      
       final response = await OTPWidget.sendOTP(data);
-      print('Send OTP Response: $response');
       
       if (response != null && (response['type'] == 'success' || response['type'] == 'success')) {
-        // Extract the request ID
         _reqId = response['message']?.toString() ?? response['reqId']?.toString();
         setLoading(false);
-        return null; // Success
+        return null; 
       } else {
         final errorMessage = response != null && response['message'] != null 
           ? response['message'].toString() 
@@ -53,7 +49,6 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  /// Returns true if OTP verification was successful
   Future<bool> verifyOTP(String otp) async {
     if (_phoneNumber == null || _reqId == null) return false;
     
@@ -65,10 +60,8 @@ class AuthController extends ChangeNotifier {
         'otp': otp
       };
       final response = await OTPWidget.verifyOTP(data);
-      print('Verify OTP Response: $response');
       
       if (response != null && response['type'] == 'success') {
-        // SDK properly delegates and doesn't hit Web Block
         setLoading(false);
         return true;
       } else {
@@ -76,13 +69,11 @@ class AuthController extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Exception in verifyOTP: $e');
       setLoading(false);
       return false;
     }
   }
 
-  /// Clears stored authentication data
   void logout() {
     _phoneNumber = null;
     _reqId = null;
@@ -90,7 +81,6 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Resends OTP to the current phone number
   Future<String?> resendOTP() async {
     if (_phoneNumber == null) return "No phone number found";
     return await sendOTP(_phoneNumber!);
